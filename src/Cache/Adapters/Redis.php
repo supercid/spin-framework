@@ -139,7 +139,7 @@ class Redis extends AbstractCacheAdapter implements CacheInterface
 
   public function dec(string $key, int $amount=1)
   {
-    return $this->redisClient->dec( $key, $amount);
+    return $this->redisClient->decrby($key, $amount);
   }
 
   public function statistics(): array

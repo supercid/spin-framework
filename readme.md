@@ -5,7 +5,7 @@
 
 # SPIN - A super lightweight PHP UI/REST framework
 [![Latest Unstable Version](https://poser.pugx.org/celarius/spin-framework/v/unstable)](https://packagist.org/packages/celarius/spin-framework)
-[![Build Status](https://travis-ci.com/github/Celarius/spin-framework.svg?branch=master)](https://travis-ci.com/github/Celarius/spin-framework)
+[![Build Status](https://github.com/Celarius/spin-framework/workflows/PHP%20Tests/badge.svg)](https://github.com/Celarius/spin-framework/actions)
 
 SPIN is a application framework for making Web UI's and REST API's quickly and effectively with PHP. It uses [PSR standards](http://www.php-fig.org/psr/)
 for most things, and allows for plugging in almost any PSR compatible component, such as loggers, HTTP libraries etc.
@@ -45,7 +45,7 @@ for most things, and allows for plugging in almost any PSR compatible component,
 * Logger (PSR-3) Defaults to [Monolog](https://github.com/Seldaek/monolog)
 * HTTP Message (PSR-7). Defaults to [Guzzle](https://github.com/guzzle/guzzle)
 * Container (PSR-11). Defaults to [The Leauge Container](http://container.thephpleague.com/)
-* SimpleCache (PSR-16). Defaults to APCu SimpleCache
+* SimpleCache (PSR-16). Supports APCu and Redis cache adapters
 * HTTP Factories (PSR-17)
 
 
@@ -66,6 +66,21 @@ Having PHPUnit installed simply type
 phpunit
 ```
 At the command prompt and all tests will be executed.
+
+### 2.2.1 Redis Cache Testing
+To test the Redis cache adapter, you need to have a Redis server running. The tests are automatically run on GitHub Actions with each push to the repository.
+
+To run the Redis tests locally:
+```bash
+# Run Redis in Docker
+docker run --name redis-test -p 6379:6379 -d redis
+
+# Run the Redis tests
+REDIS_HOST=localhost REDIS_PORT=6379 vendor/bin/phpunit tests/Cache/Adapters/RedisTest.php
+
+# Or run all tests
+vendor/bin/phpunit
+```
 
 # 3. Technical Details
 * [Cache](doc/Cache.md)
