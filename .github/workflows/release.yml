@@ -1,0 +1,53 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          
+      - name: Get version from composer.json
+        id: get-version
+        run: |
+          VERSION=$(php -r 'echo json_decode(file_get_contents("composer.json"))->version;')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Check if tag exists
+        id: check-tag
+        run: |
+          git fetch --tags
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Create Release
+        if: env.TAG_EXISTS == 'false'
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get-version.outputs.version }}
+          name: Release v${{ steps.get-version.outputs.version }}
+          body: |
+            Release of version ${{ steps.get-version.outputs.version }}
+            
+            See the [changelog](https://github.com/${{ github.repository }}/blob/master/changelog.md) for details.
+          draft: false
+          prerelease: false
